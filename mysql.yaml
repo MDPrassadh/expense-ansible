@@ -7,10 +7,15 @@
         url: https://repo.mysql.com/mysql80-community-release-el7-3.noarch.rpm
         dest: /tmp/mysql80-community-release-el7-3.noarch.rpm
 
+    - name: Download MySQL GPG Key
+      ansible.builtin.get_url:
+        url: https://repo.mysql.com/RPM-GPG-KEY-mysql
+        dest: /tmp/RPM-GPG-KEY-mysql
+
     - name: Import MySQL GPG Key
-      ansible.builtin.command:
-        cmd: rpm --import https://repo.mysql.com/RPM-GPG-KEY-mysql
-      changed_when: false
+      ansible.builtin.rpm_key:
+        key: /tmp/RPM-GPG-KEY-mysql
+        state: present
 
     - name: Install MySQL Yum Repository
       ansible.builtin.yum:
@@ -27,3 +32,4 @@
         name: mysqld
         state: started
         enabled: yes
+
