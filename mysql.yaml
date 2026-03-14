@@ -1,8 +1,19 @@
-- name: mysql configurations 
-  hosts: mysql 
-  become: yes 
-  tasks: 
-  - name: Install MYSQL Server 
-    ansible.builtin.package: 
-       name: mysql-server 
-       state: present 
+- name: mysql configurations
+  hosts: mysql
+  become: yes
+  tasks:
+    - name: Add MySQL Yum Repository
+      ansible.builtin.yum:
+        name: https://dev.mysql.com/get/mysql80-community-release-el7-3.noarch.rpm
+        state: present
+
+    - name: Install Oracle MySQL Server
+      ansible.builtin.package:
+        name: mysql-community-server
+        state: present
+
+    - name: Enable and start MySQL service
+      ansible.builtin.service:
+        name: mysqld
+        state: started
+        enabled: yes
