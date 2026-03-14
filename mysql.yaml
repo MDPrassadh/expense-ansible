@@ -2,9 +2,14 @@
   hosts: mysql
   become: yes
   tasks:
-    - name: Add MySQL Yum Repository
+    - name: Download MySQL Yum Repository RPM
+      ansible.builtin.get_url:
+        url: https://dev.mysql.com/get/mysql80-community-release-el7-3.noarch.rpm
+        dest: /tmp/mysql80-community-release-el7-3.noarch.rpm
+
+    - name: Install MySQL Yum Repository
       ansible.builtin.yum:
-        name: https://dev.mysql.com/get/mysql80-community-release-el7-3.noarch.rpm
+        name: /tmp/mysql80-community-release-el7-3.noarch.rpm
         state: present
 
     - name: Install Oracle MySQL Server
