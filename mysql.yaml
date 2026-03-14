@@ -2,6 +2,11 @@
   hosts: mysql
   become: yes
   tasks:
+    - name: Install OpenSSL 1.1 compatibility libs
+      ansible.builtin.package:
+        name: compat-openssl11
+        state: present
+
     - name: Download MySQL Yum Repository RPM
       ansible.builtin.get_url:
         url: https://repo.mysql.com/mysql80-community-release-el8-1.noarch.rpm
