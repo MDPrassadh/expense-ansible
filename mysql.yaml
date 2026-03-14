@@ -4,12 +4,12 @@
   tasks:
     - name: Download MySQL Yum Repository RPM
       ansible.builtin.get_url:
-        url: https://repo.mysql.com/mysql80-community-release-el7-3.noarch.rpm
-        dest: /tmp/mysql80-community-release-el7-3.noarch.rpm
+        url: https://repo.mysql.com/mysql80-community-release-el8-1.noarch.rpm
+        dest: /tmp/mysql80-community-release-el8-1.noarch.rpm
 
     - name: Install MySQL Yum Repository (skip GPG check)
       ansible.builtin.yum:
-        name: /tmp/mysql80-community-release-el7-3.noarch.rpm
+        name: /tmp/mysql80-community-release-el8-1.noarch.rpm
         state: present
         disable_gpg_check: yes
 
