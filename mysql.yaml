@@ -9,7 +9,7 @@
 
     - name: Import MySQL GPG Key
       ansible.builtin.rpm_key:
-        key: https://repo.mysql.com/RPM-GPG-KEY-mysql-2023
+        key: https://repo.mysql.com/RPM-GPG-KEY-mysql
         state: present
 
     - name: Install MySQL Yum Repository
