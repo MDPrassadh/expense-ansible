@@ -4,7 +4,7 @@
   tasks:
     - name: Download MySQL Yum Repository RPM
       ansible.builtin.get_url:
-        url: https://dev.mysql.com/get/mysql80-community-release-el7-3.noarch.rpm
+        url: https://repo.mysql.com/mysql80-community-release-el7-3.noarch.rpm
         dest: /tmp/mysql80-community-release-el7-3.noarch.rpm
 
     - name: Install MySQL Yum Repository
