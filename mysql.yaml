@@ -2,12 +2,13 @@
   hosts: mysql
   become: yes
   tasks:
-  - name: Install MySQL Server  # AMI RHEL - 9
-    ansible.builtin.package:
-      name: mysql-server
-      state: present 
-  - name: start mysql server 
-    ansible.builtin.service: 
-      name: mysql 
-      state: started 
-      enabled: yes 
+    - name: Install MySQL Server  # AMI RHEL - 9
+      ansible.builtin.package:
+        name: mysql-server
+        state: present 
+
+    - name: Start MySQL server
+      ansible.builtin.systemd:   # use systemd module for RHEL
+        name: mysqld
+        state: started
+        enabled: true
