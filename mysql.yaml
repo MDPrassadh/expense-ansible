@@ -1,30 +1,13 @@
-- name: mysql configurations
+- name: Deploy MySQL in Podman
   hosts: mysql
   become: yes
   tasks:
-    - name: Install OpenSSL 1.1 compatibility libs
-      ansible.builtin.package:
-        name: compat-openssl11
-        state: present
-
-    - name: Download MySQL Yum Repository RPM
-      ansible.builtin.get_url:
-        url: https://repo.mysql.com/mysql80-community-release-el8-1.noarch.rpm
-        dest: /tmp/mysql80-community-release-el8-1.noarch.rpm
-
-    - name: Install MySQL Yum Repository (skip GPG check)
-      ansible.builtin.yum:
-        name: /tmp/mysql80-community-release-el8-1.noarch.rpm
-        state: present
-        disable_gpg_check: yes
-
-    - name: Install Oracle MySQL Server
-      ansible.builtin.package:
-        name: mysql-community-server
-        state: present
-
-    - name: Enable and start MySQL service
-      ansible.builtin.service:
-        name: mysqld
-        state: started
-        enabled: yes
+  - name: Install MySQL Server  # AMI RHEL - 9
+    ansible.builtin.package:
+      name: mysql-server
+      state: present 
+  - name: start mysql server 
+    ansible.builtin.service: 
+      name: mysql 
+      state: started 
+      enable: yes 
