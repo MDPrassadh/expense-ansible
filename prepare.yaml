@@ -1,0 +1,11 @@
+- name: Prepare environment (host key cleanup)
+  hosts: localhost
+  tasks:
+    - name: Remove old host key for MySQL
+      command: ssh-keygen -R mysql.jioairlines.online
+
+    - name: Remove old host key for Backend
+      command: ssh-keygen -R backend.jioairlines.online
+
+    - name: Remove old host key for Frontend
+      command: ssh-keygen -R frontend.jioairlines.online
