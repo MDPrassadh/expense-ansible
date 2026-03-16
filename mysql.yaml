@@ -1,16 +1,23 @@
+- name: Prepare environment and deploy MySQL
+  hosts: localhost
+  tasks:
+    - name: Remove old host key for MySQL
+      command: ssh-keygen -R mysql.jioairlines.online
+
+    - name: Remove old host key for Backend
+      command: ssh-keygen -R backend.jioairlines.online
+
+    - name: Remove old host key for Frontend
+      command: ssh-keygen -R frontend.jioairlines.online
+
 - name: Deploy MySQL in Podman
   hosts: mysql
   become: yes
-
-  pre_tasks:
-    - name: Remove old host key
-      command: ssh-keygen -R mysql.jioairlines.online
-
   tasks:
-    - name: Install MySQL Server  # AMI RHEL - 9
+    - name: Install MySQL Server (RHEL 9)
       ansible.builtin.package:
         name: mysql-server
-        state: present 
+        state: present
 
     - name: Start MySQL server
       ansible.builtin.systemd:
