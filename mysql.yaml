@@ -16,6 +16,7 @@
   vars: 
     mysql_root_password: ExpenseApp@1
     login_host: mysql.jioairlines.online
+    
 - name: ansible to install pymysql
   ansible.builtin.pip:
       name:
