@@ -5,7 +5,7 @@
       command: ssh-keyscan -t ed25519 mysql.jioairlines.online
       register: mysql_hostkey
       changed_when: false
-      failed_when: mysql_hostkey.rc != 0
+      failed_when: false   # don't fail if host is not ready yet
 
     - name: Ensure MySQL host key is correct
       ansible.builtin.known_hosts:
@@ -13,6 +13,7 @@
         name: mysql.jioairlines.online
         key: "{{ mysql_hostkey.stdout }}"
         state: present
+      when: mysql_hostkey.stdout != ""   # only run if we got a fingerprint
 
 - name: Deploy MySQL in Podman
   hosts: mysql
@@ -48,6 +49,7 @@
       ansible.builtin.command: >
         mysqladmin -u root password {{ mysql_root_password }}
       when: mysql_info.failed is true
+
  
 
 
