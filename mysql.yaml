@@ -16,6 +16,11 @@
   vars: 
     mysql_root_password: ExpenseApp@1
     login_host: mysql.jioairlines.online
+- name: ansible to install pymysql
+  ansible.builtin.pip:
+      name:
+      - PyMySQL
+      executable: pip3.9
 
   tasks:
     - name: Install MySQL Server (RHEL 9)
@@ -43,6 +48,9 @@
     - name: setup MySQL root password 
       ansible.builtin.command: "mysql_secure_installation --set_root_pass {{ mysql_root_password }}"
       when: mysql_info.failed is true
+
+
+
 
 # Host key disable for terminate and recreate instances thats why in real time production based practice is not used so keep it mind 
 
