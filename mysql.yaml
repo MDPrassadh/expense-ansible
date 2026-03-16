@@ -1,11 +1,17 @@
 - name: Prepare environment and deploy MySQL
   hosts: localhost
   tasks:
+    - name: Scan MySQL host key
+      command: ssh-keyscan -t ed25519 mysql.jioairlines.online
+      register: mysql_hostkey
+      changed_when: false
+      failed_when: mysql_hostkey.rc != 0
+
     - name: Ensure MySQL host key is correct
       ansible.builtin.known_hosts:
         path: /home/ec2-user/.ssh/known_hosts
         name: mysql.jioairlines.online
-        key: "{{ lookup('pipe', 'ssh-keyscan -t ed25519 mysql.jioairlines.online') }}"
+        key: "{{ mysql_hostkey.stdout }}"
         state: present
 
 - name: Deploy MySQL in Podman
@@ -42,6 +48,26 @@
       ansible.builtin.command: >
         mysqladmin -u root password {{ mysql_root_password }}
       when: mysql_info.failed is true
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
