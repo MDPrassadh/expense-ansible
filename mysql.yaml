@@ -1,19 +1,14 @@
 - name: Prepare environment and deploy MySQL
   hosts: localhost
   tasks:
-    - name: Scan MySQL host key
-      command: ssh-keyscan -t ed25519 mysql.jioairlines.online
-      register: mysql_hostkey
-      changed_when: false
-      failed_when: false   # don't fail if host is not ready yet
+    - name: Remove old host key for MySQL
+      command: ssh-keygen -R mysql.jioairlines.online
 
-    - name: Ensure MySQL host key is correct
-      ansible.builtin.known_hosts:
-        path: /home/ec2-user/.ssh/known_hosts
-        name: mysql.jioairlines.online
-        key: "{{ mysql_hostkey.stdout }}"
-        state: present
-      when: mysql_hostkey.stdout != ""   # only run if we got a fingerprint
+    - name: Remove old host key for Backend
+      command: ssh-keygen -R backend.jioairlines.online
+
+    - name: Remove old host key for Frontend
+      command: ssh-keygen -R frontend.jioairlines.online
 
 - name: Deploy MySQL in Podman
   hosts: mysql
@@ -34,52 +29,20 @@
         state: started
         enabled: true
     
-    - name: Connect to MySQL server
+    - name: connect mysql server 
       community.mysql.mysql_info: 
         login_user: root 
         login_password: "{{ mysql_root_password }}"
         login_host: "{{ login_host }}"
       register: mysql_info 
 
-    - name: Print MySQL info 
+    - name: print mysql info 
       ansible.builtin.debug: 
         msg: "{{ mysql_info }}"
 
-    - name: Setup MySQL root password if not set
-      ansible.builtin.command: >
-        mysqladmin -u root password {{ mysql_root_password }}
+    - name: setup MySQL root password 
+      ansible.builtin.command: "mysql_secure_installation --set_root_pass {{ mysql_root_password }}"
       when: mysql_info.failed is true
-
- 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 # Host key disable for terminate and recreate instances thats why in real time production based practice is not used so keep it mind 
 
