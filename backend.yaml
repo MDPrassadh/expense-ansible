@@ -6,7 +6,7 @@
     ansible.builtin.command: dnf module disable nodejs -y
 
   - name: enable nodejs 24
-    ansible.builtin.command: dnf module enable nodejs:24.14.0 -y
+    ansible.builtin.command: dnf module enable nodejs:24 -y
   
   - name: Install nodejs 
     ansible.builtin.package: 
@@ -15,4 +15,6 @@
 
   - name: create expense user # here ansible modules use ansible will take of idempotency also error handling 
     ansible.builtin.user:    # using this user module here apart from underlying distribution of linux rhel /ubuntu coomand  will take care of ansible itself (yum or dnf / apt)
-      name: expense          # if distribution RHEL-- useradd coomand /ubuntu--adduser this work done by ansible when u use user module 
+      name: expense           # if distribution RHEL-- useradd coomand /ubuntu--adduser this work done by ansible when u use user module 
+
+                              # mostly useing modules only then only ansible will handle all the errors also
