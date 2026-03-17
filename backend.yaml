@@ -5,7 +5,7 @@
   - name: disable default nodejs
     ansible.builtin.command: dnf module disable nodejs -y
 
-  - name: enable nodejs 24
+  - name: enable nodejs 24    # streams like nodejs:20, nodejs:22, nodejs:24.
     ansible.builtin.command: dnf module enable nodejs:24 -y
   
   - name: Install nodejs 
@@ -18,3 +18,49 @@
       name: expense           # if distribution RHEL-- useradd coomand /ubuntu--adduser this work done by ansible when u use user module 
 
                               # mostly useing modules only then only ansible will handle all the errors also
+  - name: create app directory 
+    ansible.builtin.file: 
+      path: /app 
+      state: directory  # if not mention default it will take file 
+
+  - name: download the backend code 
+    ansible.builtin.get_url: 
+      url: https://expense-builds.s3.us-east-1.amazonaws.com/expense-backend-v2.zip
+      dest: /tmp/backend.zip 
+
+  - name: extract the code 
+    ansible.builtin.unarchive: 
+      src: /tmp/backend.zip
+      dest: /usr/local/bin 
+      remote_src: yes 
+  
+  - name: install dependencies 
+    ansible.builtin.command: npm install 
+    args: 
+      chdir: /app 
+
+  - name: copy backend service 
+    ansible.builtin.copy: 
+       src: backend.service
+       dest: /etc/systemd/system/backend.service
+
+  - name: ansible to install pymysql 
+    ansible.builtin.pip: 
+      name: 
+      - PyMySQL 
+      - cryptography 
+      executable: pip3.9 
+  - name: import mysql data 
+    community.mysql.mysql_db: 
+      login_user: root 
+      login_password: "{{ mysql_root_password }}"
+      login_host: "{{ login_host }}"
+      target: /app/schema/backend.sql 
+      name: all 
+      state: import 
+    
+  - name: daemon reload 
+    ansible.builtin.systemd_service:
+      daemon_reload: true 
+      state: restarted 
+      name: backend 
