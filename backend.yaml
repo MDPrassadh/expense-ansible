@@ -38,6 +38,8 @@
     ansible.builtin.command: npm install 
     args: 
       chdir: /app 
+    become: yes
+    become_user: expense
 
   - name: copy backend service 
     ansible.builtin.copy: 
