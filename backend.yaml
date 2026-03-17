@@ -48,7 +48,7 @@
 
   - name: copy backend service 
     ansible.builtin.copy: 
-       src: backend.service
+       src: files/backend.service
        dest: /etc/systemd/system/backend.service
 
   - name: ansible to install pymysql 
@@ -69,5 +69,6 @@
   - name: daemon reload 
     ansible.builtin.systemd_service:
       daemon_reload: true 
+      enabled: true 
       state: restarted 
       name: backend 
