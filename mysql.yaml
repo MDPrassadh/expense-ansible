@@ -56,4 +56,12 @@
 
 # mysql -h 172.31.7.207 -u root -p
 
-# Your Ansible credentials are: root / ExpenseApp@1
+# Your Ansible credentials are: root /   ExpenseApp@1 
+# mysql quesries.............
+
+# logs check in ansible playbook ----------------
+# ----- ansible-playbook -vvv -i inventory.ini backend.yaml
+
+# ---    1-  show databases;
+#        2-  
+   

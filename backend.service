@@ -1,15 +1,11 @@
 [Unit]
-Description=Expense Backend Service
-After=network.target
+Description = Backend Service
 
 [Service]
 User=expense
-WorkingDirectory=/app
-ExecStart=/usr/bin/node /app/index.js
-Restart=always
-Environment=DB_HOST=mysql.jioairlines.online
-Environment=DB_USER=root
-Environment=DB_PASSWORD=ExpenseApp@1
+Environment=DB_HOST="mysql.jioairlines.online"
+ExecStart=/bin/node /app/index.js
+SyslogIdentifier=backend
 
 [Install]
 WantedBy=multi-user.target
