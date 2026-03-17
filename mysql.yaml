@@ -1,133 +1,38 @@
-- name: MySQL configuration
+- name: mysql configuration
   hosts: mysql
   become: yes
   vars:
     mysql_root_password: ExpenseApp@1
-    login_host: mysql.jioairlines.online
-
+    login_host: mysql.daws81s.online
   tasks:
-    - name: Ensure pip is installed
-      ansible.builtin.yum:
-        name: python3-pip
-        state: present
+  - name: ansible to install pymysql
+    ansible.builtin.pip:
+      name:
+      - PyMySQL
+      executable: pip3.9
+  - name: install MySQL Server
+    ansible.builtin.package:
+      name: mysql-server
+      state: present
 
-    - name: Install PyMySQL for Ansible MySQL modules
-      ansible.builtin.pip:
-        name:
-          - PyMySQL
-        executable: pip3
+  - name: start mysql server
+    ansible.builtin.service:
+      name: mysqld
+      state: started
+      enabled: yes
 
-    - name: Install MySQL Server (RHEL 9)
-      ansible.builtin.package:
-        name: mysql-server
-        state: present
+  - name: connect mysql server
+    community.mysql.mysql_info:
+      login_user: root
+      login_password: "{{ mysql_root_password }}"
+      login_host: "{{ login_host }}"
+    ignore_errors: true
+    register: mysql_info
 
-    - name: Start MySQL server
-      ansible.builtin.systemd:
-        name: mysqld
-        state: started
-        enabled: true
+  - name: print mysql info
+    ansible.builtin.debug:
+      msg: "{{ mysql_info }}"
 
-    - name: Connect to MySQL server
-      community.mysql.mysql_info:
-        login_user: root
-        login_password: "{{ mysql_root_password }}"
-        login_host: "{{ login_host }}"
-      failed_when: false
-      register: mysql_info
-
-    - name: Print MySQL info
-      ansible.builtin.debug:
-        msg: "{{ mysql_info }}"
-
-    - name: Set MySQL root password
-      community.mysql.mysql_user:
-        name: root
-        host: "{{ login_host }}"
-        password: "{{ mysql_root_password }}"
-        login_user: root
-        login_password: ""
-        login_host: "{{ login_host }}"
-      when: mysql_info.failed is true
-
-    
-    
-    
-    # - name: Deploy MySQL in Podman
-#   hosts: mysql
-#   become: yes
-#   vars: 
-#     mysql_root_password: ExpenseApp@1
-#     login_host: mysql.jioairlines.online
-
-#   tasks:
-#     - name: Install MySQL Server (RHEL 9)
-#       ansible.builtin.package:
-#         name: mysql-server
-#         state: present
-
-#     - name: Start MySQL server
-#       ansible.builtin.systemd:
-#         name: mysqld
-#         state: started
-#         enabled: true
-
-#     - name: Ensure pip is installed
-#       ansible.builtin.yum:
-#         name: python3-pip
-#         state: present
-
-#     - name: Install PyMySQL for Ansible MySQL modules
-#       ansible.builtin.pip:
-#         name:
-#           - PyMySQL
-#         executable: pip3   # safer than pip3.9
-
-#     - name: Connect to MySQL server
-#       community.mysql.mysql_info: 
-#         login_user: root 
-#         login_password: "{{ mysql_root_password }}"
-#         login_host: "{{ login_host }}"
-#       register: mysql_info 
-
-#     - name: Print MySQL info 
-#       ansible.builtin.debug: 
-#         msg: "{{ mysql_info }}"
-
-#     - name: Setup MySQL root password 
-#       ansible.builtin.command: "mysql_secure_installation --set_root_pass {{ mysql_root_password }}"
-#       when: mysql_info.failed is true
-
-
-
-
-# Host key disable for terminate and recreate instances thats why in real time production based practice is not used so keep it mind 
-
-# - name: Prepare environment and clean host keys
-#   hosts: localhost
-#   tasks:
-#     - name: Remove old host key for MySQL
-#       command: ssh-keygen -R mysql.jioairlines.online
-
-#     - name: Remove old host key for Backend
-#       command: ssh-keygen -R backend.jioairlines.online
-
-#     - name: Remove old host key for Frontend
-#       command: ssh-keygen -R frontend.jioairlines.online
-
-# - name: Deploy MySQL in Podman
-#   hosts: mysql
-#   become: yes
-#   vars:
-#     ansible_ssh_common_args: "-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" # read above note
-#   tasks:
-#     - name: Install MySQL Server (RHEL 9)
-#       ansible.builtin.package:
-#         name: mysql-server
-#         state: present
-
-#     - name: Start MySQL server
-#       ansible.builtin.systemd:
-#         name: mysqld
-#         state: started
-#         enabled: true
+  - name: setup MySQL root password
+    ansible.builtin.command: "mysql_secure_installation --set-root-pass {{ mysql_root_password }}"
+    when: mysql_info.failed is true
