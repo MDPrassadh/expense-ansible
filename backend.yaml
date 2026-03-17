@@ -89,3 +89,7 @@
 
 # [Install]
 # WantedBy=multi-user.target
+
+
+# nc -zv mysql.jioairlines.online 3306
+# dig mysql.jioairlines.online
