@@ -38,3 +38,22 @@
     - name: setup MySQL root password
       ansible.builtin.command: "mysql_secure_installation --set-root-pass {{ mysql_root_password }}"
       when: mysql_info.failed is true
+
+
+##### NOTES FOR MYSQL SERVER #######################
+# when condition is here 
+
+# mysql_root_password: ExpenseApp@1
+# login_user: root
+# login_password: ExpenseApp@1
+# login_host: mysql.jioairlines.online   # or the IP if DNS isn’t ready
+
+
+# once connected to mysql server  throguh ssh -i "id_rsa" ec2-user@ec2-44-222-222-95.compute-1.amazonaws.com then
+# mysql -h mysql.jioairlines.online -u root -p   other wise  without connection direct ssh ec2-user@mysql.jioairlines.online mysql -u root -p
+
+# it doesnt workout with above credentials then go for with pvt ip address
+
+# mysql -h 172.31.7.207 -u root -p
+
+# Your Ansible credentials are: root / ExpenseApp@1
