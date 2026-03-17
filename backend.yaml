@@ -1,6 +1,9 @@
 - name: Configure backend Server 
   hosts: backend 
   become: yes 
+  vars: 
+    mysql_root_password: ExpenseApp@1
+    login_host: mysql.jioairlines.online
   tasks: 
   - name: disable default nodejs
     ansible.builtin.command: dnf module disable nodejs -y
@@ -10,8 +13,11 @@
   
   - name: Install nodejs 
     ansible.builtin.package: 
-      name: nodejs
+      name: "{{ item }}"
       state: present 
+    loop: 
+    - nodejs
+    - mysql 
 
   - name: create expense user # here ansible modules use ansible will take of idempotency also error handling 
     ansible.builtin.user:    # using this user module here apart from underlying distribution of linux rhel /ubuntu coomand  will take care of ansible itself (yum or dnf / apt)
@@ -30,8 +36,8 @@
 
   - name: extract the code 
     ansible.builtin.unarchive: 
-      src: /tmp/backend.zip
-      dest: /usr/local/bin 
+      src: /tmp/backend.zip   #  by default ansible thinks this is in ansible server
+      dest: /app
       remote_src: yes 
   
   - name: install dependencies 
