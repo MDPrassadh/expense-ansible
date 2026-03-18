@@ -35,9 +35,30 @@
 
     - name: copy nginx config
       ansible.builtin.copy:
-        src: files/expense.conf
         dest: /etc/nginx/conf.d/expense.conf
-        
+        content: |
+          server {
+              listen 80;
+              server_name jioairlines.online;
+
+              root /usr/share/nginx/html;
+              index index.html;
+
+              location / {
+                  try_files $uri /index.html;
+              }
+
+              location /api/ {
+                  proxy_pass http://backend.jioairlines.online:8080/;
+                  proxy_http_version 1.1;
+              }
+
+              location /health {
+                  stub_status on;
+                  access_log off;
+              }
+          }
+
     - name: validate nginx config
       ansible.builtin.command: nginx -t
       register: nginx_test
