@@ -33,11 +33,19 @@
       src: /tmp/frontend.zip # by default ansible thinks this is ansible sever 
       dest: /usr/share/nginx/html
       remote_src: yes 
+  - name: set SELinux context for frontend files
+    ansible.builtin.command: chcon -t httpd_sys_content_t /usr/share/nginx/html -R
+
+  - name: copy expense conf
+    ansible.builtin.copy:
+      src: expense.conf
+      dest: /etc/nginx/conf.d/expense.conf   # corrected path
+
   
-  - name: copy expense conf 
-    ansible.builtin.copy: 
-      src: expense.conf 
-      dest: /etc/nginx/default.d/expense.conf 
+  # - name: copy expense conf 
+  #   ansible.builtin.copy: 
+  #     src: expense.conf 
+  #     dest: /etc/nginx/default.d/expense.conf 
 
   - name: restart nginx   
     ansible.builtin.service: 
