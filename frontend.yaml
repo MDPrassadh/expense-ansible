@@ -13,7 +13,7 @@
       state: started 
       enabled: yes 
 
-  - name: Recursively remove directory 
+  - name: Recursively remove html directory 
     ansible.builtin.file: 
       path: /usr/share/nginx/html 
       state: absent 
@@ -37,7 +37,7 @@
   - name: copy expense conf
     ansible.builtin.copy:
       src: expense.conf
-      dest: /etc/nginx/conf.d/expense.conf   # corrected patt
+      dest: /etc/nginx/default.d/expense.conf   # corrected patt
 
   - name: restart nginx   
     ansible.builtin.service: 
