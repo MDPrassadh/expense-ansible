@@ -38,10 +38,6 @@
     ansible.builtin.copy: 
       src: expense.conf 
       dest: /etc/nginx/default.d/expense.conf 
-  
-  - name: set SELinux context for html files
-    ansible.builtin.command: chcon -t httpd_sys_content_t /usr/share/nginx/html -R
-
 
   - name: restart nginx   
     ansible.builtin.service: 
