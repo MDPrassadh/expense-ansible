@@ -33,12 +33,7 @@
       src: /tmp/frontend.zip # by default ansible thinks this is ansible sever 
       dest: /usr/share/nginx/html
       remote_src: yes 
-  - name: add SELinux file context rule
-    ansible.builtin.command: semanage fcontext -a -t httpd_sys_content_t "/usr/share/nginx/html(/.*)?"
-
-  - name: apply SELinux context
-    ansible.builtin.command: restorecon -Rv /usr/share/nginx/html
-
+ 
   - name: copy expense conf
     ansible.builtin.copy:
       src: expense.conf
