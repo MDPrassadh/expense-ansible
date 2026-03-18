@@ -93,3 +93,16 @@
 
 # nc -zv mysql.jioairlines.online 3306
 # dig mysql.jioairlines.online
+
+
+ #  In interviewr aksed you what type of modules you are using in ansible..?
+#  i usually using modules are below 
+                  #  1 package 
+                  #  2 copy
+                  #  3  user 
+                  #  4 get url
+                  #  5 unarchive
+                  #  6 file 
+                  #  7 mysql 
+                  #  8 pip 
+                  #  9 service 
