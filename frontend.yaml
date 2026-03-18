@@ -39,19 +39,10 @@
   - name: apply SELinux context
     ansible.builtin.command: restorecon -Rv /usr/share/nginx/html
 
-  # - name: set SELinux context for frontend files
-  #   ansible.builtin.command: chcon -t httpd_sys_content_t /usr/share/nginx/html -R
-
   - name: copy expense conf
     ansible.builtin.copy:
       src: expense.conf
-      dest: /etc/nginx/conf.d/expense.conf   # corrected path
-
-  
-  # - name: copy expense conf 
-  #   ansible.builtin.copy: 
-  #     src: expense.conf 
-  #     dest: /etc/nginx/default.d/expense.conf 
+      dest: /etc/nginx/conf.d/expense.conf   # corrected patt
 
   - name: restart nginx   
     ansible.builtin.service: 
