@@ -1,45 +1,76 @@
-- name: Configure frontend server 
-  hosts: frontend 
-  become: yes 
-  tasks: 
-  - name: install nginx server 
-    ansible.builtin.package:
-      name: nginx 
-      state: present
+- name: Configure frontend server
+  hosts: frontend
+  become: yes
+  tasks:
+    - name: install nginx server
+      ansible.builtin.package:
+        name: nginx
+        state: present
 
-  - name: start nginx server 
-    ansible.builtin.service:
-      name: nginx 
-      state: started 
-      enabled: yes 
+    - name: ensure nginx is enabled
+      ansible.builtin.service:
+        name: nginx
+        enabled: yes
 
-  - name: Recursively remove html directory 
-    ansible.builtin.file: 
-      path: /usr/share/nginx/html 
-      state: absent 
+    - name: remove html directory
+      ansible.builtin.file:
+        path: /usr/share/nginx/html
+        state: absent
 
-  - name: Create html directory 
-    ansible.builtin.file: 
-      path: /usr/share/nginx/html 
-      state: directory 
+    - name: recreate html directory
+      ansible.builtin.file:
+        path: /usr/share/nginx/html
+        state: directory
 
-  - name: download the frontend code 
-    ansible.builtin.get_url: 
-      url: https://expense-builds.s3.us-east-1.amazonaws.com/expense-frontend-v2.zip
-      dest: /tmp/frontend.zip
-    
-  - name: extract the code 
-    ansible.builtin.unarchive: 
-      src: /tmp/frontend.zip # by default ansible thinks this is ansible sever 
-      dest: /usr/share/nginx/html
-      remote_src: yes 
- 
-  - name: copy expense conf
-    ansible.builtin.copy:
-      src: expense.conf
-      dest: /etc/nginx/default.d/expense.conf   # corrected patt
+    - name: download frontend build
+      ansible.builtin.get_url:
+        url: https://expense-builds.s3.us-east-1.amazonaws.com/expense-frontend-v2.zip
+        dest: /tmp/frontend.zip
 
-  - name: restart nginx   
-    ansible.builtin.service: 
-      name: nginx 
-      state: restarted  
+    - name: extract frontend build
+      ansible.builtin.unarchive:
+        src: /tmp/frontend.zip
+        dest: /usr/share/nginx/html
+        remote_src: yes
+
+    - name: copy nginx config
+      ansible.builtin.copy:
+        dest: /etc/nginx/conf.d/expense.conf
+        content: |
+          server {
+              listen 80;
+              server_name jioairlines.online;
+
+              root /usr/share/nginx/html;
+              index index.html;
+
+              location / {
+                  try_files $uri /index.html;
+              }
+
+              proxy_http_version 1.1;
+
+              location /api/ {
+                  proxy_pass http://backend.jioairlines.online:8080/;
+              }
+
+              location /health {
+                  stub_status on;
+                  access_log off;
+              }
+          }
+
+    - name: validate nginx config
+      ansible.builtin.command: nginx -t
+      register: nginx_test
+      ignore_errors: true
+
+    - name: fail if nginx config invalid
+      ansible.builtin.fail:
+        msg: "Nginx config test failed: {{ nginx_test.stderr }}"
+      when: nginx_test.rc != 0
+
+    - name: restart nginx
+      ansible.builtin.service:
+        name: nginx
+        state: restarted
