@@ -4,8 +4,23 @@
   vars:
     mysql_root_password: ExpenseApp@1
     login_host: mysql.jioairlines.online
+  
 
   tasks:
+    - name: Allow root remote access
+      community.mysql.mysql_user:
+        name: root
+        host: "%"
+        password: "{{ mysql_root_password }}"
+        priv: "*.*:ALL,GRANT"
+        state: present
+        login_user: root
+        login_password: "{{ mysql_root_password }}"
+        login_host: localhost
+
+
+
+
     - name: Ensure python3-pip is installed
       ansible.builtin.package:
         name: python3-pip
