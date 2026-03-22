@@ -4,47 +4,26 @@
   vars:
     mysql_root_password: ExpenseApp@1
     login_host: mysql.jioairlines.online
-  
-
   tasks:
-    - name: Allow root remote access
-      community.mysql.mysql_user:
-        name: root
-        host: "%"
-        password: "{{ mysql_root_password }}"
-        priv: "*.*:ALL,GRANT"
-        state: present
-        login_user: root
-        login_password: "{{ mysql_root_password }}"
-        login_host: localhost
-
-
-
-
-    - name: Ensure python3-pip is installed
-      ansible.builtin.package:
-        name: python3-pip
-        state: present
-
-    - name: Install PyMySQL and cryptography
+    - name: ansible to install pymysql
       ansible.builtin.pip:
         name:
           - PyMySQL
           - cryptography
-        executable: pip3
+        executable: pip3.9
 
-    - name: Install MySQL Server
+    - name: install MySQL Server
       ansible.builtin.package:
         name: mysql-server
         state: present
 
-    - name: Start MySQL service
+    - name: start mysql server
       ansible.builtin.service:
-        name: mysql
+        name: mysqld
         state: started
         enabled: yes
-
-    - name: Connect to MySQL server
+    
+    - name: connect mysql server
       community.mysql.mysql_info:
         login_user: root
         login_password: "{{ mysql_root_password }}"
@@ -52,71 +31,16 @@
       ignore_errors: true
       register: mysql_info
 
-    - name: Print MySQL info
+    - name: print mysql info
       ansible.builtin.debug:
         msg: "{{ mysql_info }}"
 
-    - name: Setup MySQL root password (Ubuntu way)
-      community.mysql.mysql_user:
-        name: root
-        host: "{{ login_host }}"
-        password: "{{ mysql_root_password }}"
-        login_user: root
-        login_password: "{{ mysql_root_password }}"
-        login_host: "{{ login_host }}"
+    - name: setup MySQL root password
+      ansible.builtin.command: "mysql_secure_installation --set-root-pass {{ mysql_root_password }}"
       when: mysql_info.failed is true
 
 
-
-
-
-
-
-
-# here is structure of playbook is RHEL ( 9)
-# - name: mysql configuration
-#   hosts: mysql
-#   become: yes
-#   vars:
-#     mysql_root_password: ExpenseApp@1
-#     login_host: mysql.jioairlines.online
-#   tasks:
-#     - name: ansible to install pymysql
-#       ansible.builtin.pip:
-#         name:
-#           - PyMySQL
-#           - cryptography
-#         executable: pip3.9
-
-#     - name: install MySQL Server
-#       ansible.builtin.package:
-#         name: mysql-server
-#         state: present
-
-#     - name: start mysql server
-#       ansible.builtin.service:
-#         name: mysqld
-#         state: started
-#         enabled: yes
-    
-#     - name: connect mysql server
-#       community.mysql.mysql_info:
-#         login_user: root
-#         login_password: "{{ mysql_root_password }}"
-#         login_host: "{{ login_host }}"
-#       ignore_errors: true
-#       register: mysql_info
-
-#     - name: print mysql info
-#       ansible.builtin.debug:
-#         msg: "{{ mysql_info }}"
-
-#     - name: setup MySQL root password
-#       ansible.builtin.command: "mysql_secure_installation --set-root-pass {{ mysql_root_password }}"
-#       when: mysql_info.failed is true
-
-
-##### NOTES FOR MYSQL SERVER #######################
+#### NOTES FOR MYSQL SERVER #######################
 # when condition is here 
 
 # mysql_root_password: ExpenseApp@1
