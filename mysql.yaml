@@ -4,6 +4,7 @@
   vars:
     mysql_root_password: ExpenseApp@1
     login_host: mysql.jioairlines.online
+    backend_host: backend.jioairlines.online
 
   tasks:
     - name: Install pip3
@@ -27,7 +28,15 @@
         state: started
         enabled: yes
 
-    - name: Check MySQL connection
+    - name: Setup MySQL root user restricted to backend
+      community.mysql.mysql_user:
+        name: root
+        host: "{{ backend_host }}"
+        password: "{{ mysql_root_password }}"
+        priv: "*.*:ALL,GRANT"
+        state: present
+
+    - name: Check MySQL connection from backend
       community.mysql.mysql_info:
         login_user: root
         login_password: "{{ mysql_root_password }}"
@@ -38,10 +47,6 @@
     - name: Print MySQL info
       ansible.builtin.debug:
         msg: "{{ mysql_info }}"
-
-    - name: Setup MySQL root password (if not set)
-      ansible.builtin.command: "mysql_secure_installation --set-root-pass {{ mysql_root_password }}"
-      when: mysql_info.failed is true
 
 
 
