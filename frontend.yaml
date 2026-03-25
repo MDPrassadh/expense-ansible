@@ -22,6 +22,11 @@
         path: /usr/share/nginx/html
         state: directory
 
+    - name: install unzip (needed for unarchive)
+      ansible.builtin.package:
+        name: unzip
+        state: present
+
     - name: download frontend build
       ansible.builtin.get_url:
         url: https://expense-builds.s3.us-east-1.amazonaws.com/expense-frontend-v2.zip
